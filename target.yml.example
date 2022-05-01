@@ -1,0 +1,28 @@
+#####################################
+##              target             ##
+#####################################
+- name: apply target configuration to target nodes
+  hosts: target
+  remote_user: vagrant
+  become: yes
+  roles:
+    - 00_dummy
+    - 01_common/common
+    - 01_common/swap
+    - 01_common/useradd_with_key
+    - 01_common/tools
+    - 02_web/httpd
+    #- 02_web/nginx
+    #- 03_app/php
+    - 03_app/php-fpm
+    #- 04_database/mysql-client80
+    - 04_database/mysql-server80
+    - 05_logs/httpd
+    #- 05_logs/nginx
+    - 05_logs/mysql
+    - 05_logs/syslog
+    - 06_monitor/zabbix-agent50
+    #- 06_monitor/zabbix-proxy50
+    - 06_monitor/zabbix-mysql-agent
+
+
