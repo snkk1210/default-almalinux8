@@ -12,7 +12,7 @@ Apache の基本的な設定を行う playbook です。
 
 ## 変数
 
-domain_nameに設定するドメインとOSユーザを指定して下さい。
+domain_name に設定するドメインと OS ユーザを指定して下さい。
 
 ```
 ---

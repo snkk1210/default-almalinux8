@@ -1,5 +1,5 @@
 ---
-# apacheインストール
+# Apache インストール
 - name: install apache
   yum:
     name:
@@ -20,6 +20,7 @@
     group: apache
     mode: 02775
     recurse: yes
+  when: domain_name is defined
   with_items:
     -  "{{ domain_name }}"
 
@@ -30,6 +31,7 @@
     owner: root
     group: root
     mode: 644
+  when: domain_name is defined
   with_items:
     -  "{{ domain_name }}"
 
