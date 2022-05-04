@@ -35,6 +35,29 @@
   with_items:
     -  "{{ domain_name }}"
 
+- name: mkdir custom docment root
+  file:
+    path: "{{ item.document_root }}"
+    state: directory
+    owner: "{{ item.customer }}"
+    group: apache
+    mode: 02775
+    recurse: yes
+  when: custom_domain is defined
+  with_items:
+    -  "{{ custom_domain }}"
+
+- name: add custom virtualhost
+  template:
+    src: "../templates/custom_vhost.j2"
+    dest: "/etc/httpd/conf.d/vhost.{{ item.domain }}.conf"
+    owner: root
+    group: root
+    mode: 644
+  when: custom_domain is defined
+  with_items:
+    -  "{{ custom_domain }}"
+
 - name: change parameter
   template:
     src: ../templates/{{ item }}
