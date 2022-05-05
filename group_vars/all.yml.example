@@ -1,11 +1,14 @@
 ex_user:
-  - { customer: 'testuser1' ,customer_pass: 'hogehoge' }
+  - { customer: 'ease_ops' ,customer_pass: 'vagrantvagrant' }
 
 ServerAdmin: info@fingerease.work
 domain_name:
-   - { domain: 'fingerease.work' ,customer: 'root' }
-   #- { domain: 'vagrant.com' ,customer: 'vagrant' }
+   - { domain: 'fingerease.work' ,customer: 'ease_ops' }
+   - { domain: 'vagrant.com' ,customer: 'vagrant' }
+custom_domain:
+   - { domain: 'ease.fingerease' ,customer: 'ease_ops' , document_root: '/home/ease_ops/public_html' }
 webuser: apache
+#webuser: nginx
 
 php_var: 8.1
 php_modules:
