@@ -4,9 +4,7 @@
   yum:
     name: https://dev.mysql.com/get/mysql80-community-release-el8-3.noarch.rpm
     state: present
+    disable_gpg_check: yes
 
-- name: install mysql-client
-  yum:
-    name: mysql-community-client
-    state: present
-    disable_repo: appstream
+- name: install mysql
+  shell: "dnf install --disablerepo=appstream mysql-community-client -y"
