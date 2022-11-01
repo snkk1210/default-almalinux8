@@ -40,7 +40,7 @@
     mode: 0644
     backup: yes 
 
-# ディレクトリ権限調整
+# キャッシュディレクトリ権限調整
 - name: change permission
   file:
     path: /var/lib/php/{{ item }}
@@ -51,6 +51,23 @@
     - opcache
     - session
     - wsdlcache
+
+# php-fpm ファイルディスクリプタの上限値
+- name: mkdir /etc/systemd/system/php-fpm.service.d/
+  file:
+    path: "/etc/systemd/system/php-fpm.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: change file descriptor limit for php-fpm
+  template:
+    src: "../templates/limits.conf"
+    dest: "/etc/systemd/system/php-fpm.service.d/"
+    owner: root
+    group: root
+    mode: 0644
 
 # php-fpm 起動
 - name: start php-fpm
