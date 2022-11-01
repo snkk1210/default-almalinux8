@@ -1,10 +1,18 @@
 ---
 # tasks file for nginx
+- name: deploy nginx.repo
+  template:
+    src: "../templates/nginx.repo.j2"
+    dest: "/etc/yum.repos.d/nginx.repo"
+    owner: root
+    group: root
+    mode: 0644
+
 - name: install nginx
   yum:
     name:
       - nginx
-    lock_timeout: 180
+    enablerepo: nginx-stable
 
 - name: mkdir public_html
   file:
@@ -47,7 +55,7 @@
     dest: "/etc/nginx/conf.d/vhost.{{ item.domain }}.conf"
     owner: root
     group: root
-    mode: 644
+    mode: 0644
   when: custom_domain is defined
   with_items:
     -  "{{ custom_domain }}"
@@ -71,22 +79,22 @@
     line: "{{ item.line }}"
     backup: yes
   with_items:
-    - { regexp: "worker_connections 1024;" ,line: "worker_connections 4096;" }
+    - { regexp: "worker_connections  1024;" ,line: "worker_connections  4096;" }
 
 - name: change worker_rlimit_nofile
   lineinfile:
     dest: "/etc/nginx/nginx.conf"
     state: present
-    insertafter: "^worker_processes auto;"
-    line: "worker_rlimit_nofile 4096;"
+    insertafter: "^worker_processes  auto;"
+    line: "worker_rlimit_nofile  4096;"
 
-- name: change nginx_limit
+- name: change file descriptor limit for nginx
   template:
     src: "../templates/limits.conf"
     dest: "/etc/systemd/system/nginx.service.d/"
     owner: root
     group: root
-    mode: 644  
+    mode: 0644  
 
 - name: start nginx
   systemd:
