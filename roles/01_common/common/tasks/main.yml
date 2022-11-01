@@ -33,6 +33,7 @@
       - vim
       - bind-utils
       - telnet
+      - wget
       - dstat
       - unzip
       - zip
