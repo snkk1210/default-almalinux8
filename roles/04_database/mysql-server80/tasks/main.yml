@@ -67,4 +67,27 @@
     backrefs: yes
     regexp: '^log-error = /var/log/mysqld.log'
     line: 'log-error = /var/log/mysql/mysqld.log'
-  notify: mysqld_restart
+  notify: restart_mysqld_handler
+
+- name: mkdir /etc/systemd/system/mysqld.service.d/
+  file:
+    path: "/etc/systemd/system/mysqld.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: change file descriptor limit for mysqld
+  template:
+    src: "../templates/limits.conf"
+    dest: "/etc/systemd/system/mysqld.service.d/"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: restart mysqld
+  systemd:
+    name: mysqld
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
