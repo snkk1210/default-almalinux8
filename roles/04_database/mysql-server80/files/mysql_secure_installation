@@ -1,14 +1,10 @@
 #!/bin/bash
 
-
 # 初期パスワードを取得
 IntPasswd=$(grep "A temporary password is generated for root@localhost:" /var/log/mysqld.log | awk '{print $13}')
 
 # パスワード自動作成
 MysqlRootPasswd="$(mkpasswd -l 16 | tee -a ~/.mysql.secrets)"
-
-# パスワード指定
-#MysqlRootPasswd=aes7sChea7v:12
 
 expect -c '
     set timeout 10;
