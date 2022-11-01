@@ -40,6 +40,13 @@
       - postfix
     state: present
 
+# postfix 起動
+- name: start postfix
+  systemd:
+    name: postfix
+    state: started
+    enabled: yes
+
 # hostname 変更
 - name: change hostname
   hostname: name="{{ inventory_hostname }}"
