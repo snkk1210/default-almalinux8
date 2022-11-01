@@ -69,4 +69,28 @@
     - mpm.conf.disable
     - security.conf
 
+# httpd ファイルディスクリプタの上限値
+- name: mkdir /etc/systemd/system/httpd.service.d/
+  file:
+    path: "/etc/systemd/system/httpd.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: change file descriptor limit for httpd
+  template:
+    src: "../templates/limits.conf"
+    dest: "/etc/systemd/system/httpd.service.d/"
+    owner: root
+    group: root
+    mode: 0644
+
 - include: security.yml
+
+- name: restart httpd
+  systemd:
+    name: httpd
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

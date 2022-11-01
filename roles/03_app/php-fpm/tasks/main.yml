@@ -70,8 +70,9 @@
     mode: 0644
 
 # php-fpm 起動
-- name: start php-fpm
+- name: restart php-fpm
   systemd:
     name: php-fpm
-    state: started
+    state: restarted
+    daemon_reload: yes
     enabled: yes
