@@ -18,7 +18,7 @@
   with_items:
     - "{{ php_modules | default('php-fpm', true) }}"
 
-# php.ini変更
+# php.ini 変更
 - name: change php.ini
   lineinfile:
     dest="/etc/php.ini"
@@ -30,7 +30,7 @@
     - { regexp: "post_max_size = 8M" ,line: "post_max_size = 128M" }
     - { regexp: "upload_max_filesize = 2M" ,line: "upload_max_filesize = 128M" }
 
-# php-fpmファイルの設置
+# php-fpm ファイルの設置
 - name: deploy web.conf 
   template:
     src: ../templates/www.conf
