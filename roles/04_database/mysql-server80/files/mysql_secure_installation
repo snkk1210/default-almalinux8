@@ -2,7 +2,7 @@
 
 
 # 初期パスワードを取得
-Int_Passwd=$(grep "A temporary password is generated for root@localhost:" /var/log/mysqld.log | awk '{ print $13}')
+IntPasswd=$(grep "A temporary password is generated for root@localhost:" /var/log/mysqld.log | awk '{print $13}')
 
 # パスワード自動作成
 MysqlRootPasswd="$(mkpasswd -l 16 | tee -a ~/.mysql.secrets)"
@@ -14,7 +14,7 @@ expect -c '
     set timeout 10;
     spawn mysql_secure_installation;
     expect "Enter password for user root:";
-    send "'"${Int_Passwd}"'\n";
+    send "'"${IntPasswd}"'\n";
     expect "New password:";
     send "'"${MysqlRootPasswd}"'\n";
     expect "Re-enter new password:";
