@@ -1,5 +1,14 @@
 ---
-- name: mkdir public_html
+- name: mkdir vhosts directory
+  file:
+    path: "/var/www/vhosts
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: domain_name is defined
+
+- name: mkdir public_html directory
   file:
     path: "/var/www/vhosts/{{ item.domain }}/public_html"
     state: directory
