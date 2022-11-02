@@ -1,7 +1,7 @@
 ---
 - name: mkdir vhosts directory
   file:
-    path: "/var/www/vhosts
+    path: "/var/www/vhosts"
     state: directory
     owner: root
     group: root
