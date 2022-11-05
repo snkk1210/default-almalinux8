@@ -33,12 +33,20 @@
       - vim
       - bind-utils
       - telnet
+      - wget
       - dstat
       - unzip
       - zip
       - etckeeper
       - postfix
     state: present
+
+# postfix 起動
+- name: start postfix
+  systemd:
+    name: postfix
+    state: started
+    enabled: yes
 
 # hostname 変更
 - name: change hostname
@@ -88,5 +96,5 @@
      dest=/root/.bashrc
      line="HISTTIMEFORMAT='%Y-%m-%dT%T%z '"
 
-- include: host_change.yml
-- include: etckeeper_commit.yml
+- include_tasks: host_change.yml
+- include_tasks: etckeeper_commit.yml

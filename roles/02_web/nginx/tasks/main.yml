@@ -1,56 +1,18 @@
 ---
 # tasks file for nginx
+- name: deploy nginx.repo
+  template:
+    src: "../templates/nginx.repo.j2"
+    dest: "/etc/yum.repos.d/nginx.repo"
+    owner: root
+    group: root
+    mode: 0644
+
 - name: install nginx
   yum:
     name:
       - nginx
-    lock_timeout: 180
-
-- name: mkdir public_html
-  file:
-    path: "/var/www/vhosts/{{ item.domain }}/public_html"
-    state: directory
-    owner: "{{ item.customer }}"
-    group: nginx
-    mode: 02775
-    recurse: yes
-  when: domain_name is defined
-  with_items:
-    -  "{{ domain_name }}"
-
-- name: add virtualhost
-  template:
-    src: "../templates/vhost.j2"
-    dest: "/etc/nginx/conf.d/vhost.{{ item.domain }}.conf"
-    owner: root
-    group: root
-    mode: 0644
-  when: domain_name is defined
-  with_items:
-    -  "{{ domain_name }}"
-
-- name: mkdir custom docment root
-  file:
-    path: "{{ item.document_root }}"
-    state: directory
-    owner: "{{ item.customer }}"
-    group: nginx
-    mode: 02775
-    recurse: yes
-  when: custom_domain is defined
-  with_items:
-    -  "{{ custom_domain }}"
-
-- name: add custom virtualhost
-  template:
-    src: "../templates/custom_vhost.j2"
-    dest: "/etc/nginx/conf.d/vhost.{{ item.domain }}.conf"
-    owner: root
-    group: root
-    mode: 644
-  when: custom_domain is defined
-  with_items:
-    -  "{{ custom_domain }}"
+    enablerepo: nginx-stable
 
 - name: put upstream.conf
   template:
@@ -71,22 +33,24 @@
     line: "{{ item.line }}"
     backup: yes
   with_items:
-    - { regexp: "worker_connections 1024;" ,line: "worker_connections 4096;" }
+    - { regexp: "worker_connections  1024;" ,line: "worker_connections  4096;" }
 
 - name: change worker_rlimit_nofile
   lineinfile:
     dest: "/etc/nginx/nginx.conf"
     state: present
-    insertafter: "^worker_processes auto;"
-    line: "worker_rlimit_nofile 4096;"
+    insertafter: "^worker_processes  auto;"
+    line: "worker_rlimit_nofile  4096;"
 
-- name: change nginx_limit
+- name: change file descriptor limit for nginx
   template:
     src: "../templates/limits.conf"
     dest: "/etc/systemd/system/nginx.service.d/"
     owner: root
     group: root
-    mode: 644  
+    mode: 0644
+
+- include_tasks: vhost.yml
 
 - name: start nginx
   systemd:

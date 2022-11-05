@@ -1,7 +1,8 @@
 ---
-# 起動
-- name: httpd_start
-  service:
-    name=httpd
-    state=started
-    enabled=yes
+# 再起動
+- name: restart_httpd_handler
+  systemd:
+    name: httpd
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

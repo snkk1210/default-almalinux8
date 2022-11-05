@@ -18,19 +18,19 @@
   with_items:
     - "{{ php_modules | default('php-fpm', true) }}"
 
-# php.ini変更
+# php.ini 変更
 - name: change php.ini
   lineinfile:
-    dest="/etc/php.ini"
-    regexp="{{ item.regexp }}"
-    line="{{ item.line }}"
+    dest: /etc/php.ini
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
   with_items:
     - { regexp: ";date.timezone*" ,line: "date.timezone = Asia/Tokyo" }
     - { regexp: "expose_php = On" ,line: "expose_php = Off" }
     - { regexp: "post_max_size = 8M" ,line: "post_max_size = 128M" }
     - { regexp: "upload_max_filesize = 2M" ,line: "upload_max_filesize = 128M" }
 
-# php-fpmファイルの設置
+# php-fpm ファイルの設置
 - name: deploy web.conf 
   template:
     src: ../templates/www.conf
@@ -40,7 +40,7 @@
     mode: 0644
     backup: yes 
 
-# ディレクトリ権限調整
+# キャッシュディレクトリ権限調整
 - name: change permission
   file:
     path: /var/lib/php/{{ item }}
@@ -52,9 +52,27 @@
     - session
     - wsdlcache
 
+# php-fpm ファイルディスクリプタの上限値
+- name: mkdir /etc/systemd/system/php-fpm.service.d/
+  file:
+    path: "/etc/systemd/system/php-fpm.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: change file descriptor limit for php-fpm
+  template:
+    src: "../templates/limits.conf"
+    dest: "/etc/systemd/system/php-fpm.service.d/"
+    owner: root
+    group: root
+    mode: 0644
+
 # php-fpm 起動
-- name: start php-fpm
+- name: restart php-fpm
   systemd:
     name: php-fpm
-    state: started
+    state: restarted
+    daemon_reload: yes
     enabled: yes
