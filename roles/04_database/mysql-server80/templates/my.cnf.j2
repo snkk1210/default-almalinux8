@@ -22,7 +22,7 @@
 # Remove leading # to revert to previous value for default_authentication_plugin,
 # this will increase compatibility with older clients. For background, see:
 # https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_default_authentication_plugin
-default-authentication-plugin = mysql_native_password
+#default-authentication-plugin = mysql_native_password
 
 datadir = /var/lib/mysql
 socket = /var/lib/mysql/mysql.sock
@@ -31,7 +31,12 @@ log-bin = /var/lib/mysql/mysql-bin
 server-id = 2
 binlog_expire_logs_seconds = 259200
 
-max_allowed_packet = 8M
+# 必要であれば有効化
+#skip-name-resolve
+
+max_allowed_packet = 16M
+max_connect_errors = 50
+max_connections = 500
 
 log-error = /var/log/mysqld.log
 pid-file = /var/run/mysqld/mysqld.pid
@@ -44,7 +49,7 @@ innodb_buffer_pool_size = {{ innodb_buffer_pool_size | default('256M', true) }}
 # たぶん2以上にあげてもメリットない
 #innodb_log_files_in_group = 2
 # MySQL専有サーバなら O_DIRECT がいいかも
-#innodb_flush_method = O_DIRECT
+innodb_flush_method = O_DIRECT
 
 # myisam
 key_buffer_size = {{ key_buffer_size | default('8M', true) }}
