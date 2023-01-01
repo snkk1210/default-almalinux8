@@ -43,12 +43,6 @@ pid-file = /var/run/mysqld/mysqld.pid
 
 # innodb
 innodb_buffer_pool_size = {{ innodb_buffer_pool_size | default('256M', true) }}
-
-# 物理メモリの1/16くらい？
-#innodb_log_file_size = 512M
-# たぶん2以上にあげてもメリットない
-#innodb_log_files_in_group = 2
-# MySQL専有サーバなら O_DIRECT がいいかも
 innodb_flush_method = O_DIRECT
 
 # myisam
