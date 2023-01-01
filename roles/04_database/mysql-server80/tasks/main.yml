@@ -1,10 +1,14 @@
 ---
 # tasks file for mysql-server80
+
+#- name: install mysql80 repository
+#  yum:
+#    name: https://dev.mysql.com/get/mysql80-community-release-el8-4.noarch.rpm
+#    state: present
+#    disable_gpg_check: yes
+
 - name: install mysql80 repository
-  yum:
-    name: https://dev.mysql.com/get/mysql80-community-release-el8-4.noarch.rpm
-    state: present
-    disable_gpg_check: yes
+  shell: "dnf install https://dev.mysql.com/get/mysql80-community-release-el8-4.noarch.rpm -y"
 
 - name: install expect
   yum:
