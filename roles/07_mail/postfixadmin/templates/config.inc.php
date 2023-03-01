@@ -1,16 +1,15 @@
 <?php
-/** 
- * Postfix Admin 
- * 
- * LICENSE 
- * This source file is subject to the GPL license that is bundled with  
- * this package in the file LICENSE.TXT. 
- * 
- * Further details on the project are available at http://postfixadmin.sf.net 
- * 
- * @version $Id$ 
- * @license GNU GPL v2 or later. 
- * 
+/**
+ * Postfix Admin
+ *
+ * LICENSE
+ * This source file is subject to the GPL license that is bundled with
+ * this package in the file LICENSE.TXT.
+ *
+ * Further details on the project are available at http://postfixadmin.sf.net
+ *
+ * @license GNU GPL v2 or later.
+ *
  * File: config.inc.php
  * Contains configuration options.
  */
@@ -30,10 +29,10 @@
 #                                                                              #
 ################################################################################
 
-
+global $CONF;
 
 /*****************************************************************
- *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+ *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * You have to set $CONF['configured'] = true; before the
  * application will run!
  * Doing this implies you have changed this file as required.
@@ -56,18 +55,18 @@ $CONF['language_hook'] = '';
 
 /*
     language_hook example function
- 
+
     Called if $CONF['language_hook'] == '<name_of_the_function>'
     Allows to add or override $PALANG interface texts.
 
-    If you add new texts, please always prefix them with 'x_' (for example 
+    If you add new texts, please always prefix them with 'x_' (for example
     $PALANG['x_mytext'] = 'foo') to avoid they clash with texts that might be
     added to languages/*.lang in future versions of PostfixAdmin.
 
     Please also make sure that all your added texts are included in all
     sections - that includes all 'case "XY":' sections and the 'default:'
     section (for users that don't have any of the languages specified
-    in the 'case "XY":' section). 
+    in the 'case "XY":' section).
     Usually the 'default:' section should contain english text.
 
     If you modify an existing text/translation, please consider to report it
@@ -104,13 +103,14 @@ $CONF['database_user'] = 'postfix';
 $CONF['database_password'] = '{{ postfix_password | default('I9Aa~r(/ad$%v', true) }}';
 $CONF['database_name'] = 'postfix';
 
-// Database SSL Config
+// Database SSL Config (PDO/MySQLi only)
 $CONF['database_use_ssl'] = false;
 $CONF['database_ssl_key'] = NULL;
 $CONF['database_ssl_cert'] = NULL;
 $CONF['database_ssl_ca'] = NULL;
 $CONF['database_ssl_ca_path'] = NULL;
 $CONF['database_ssl_cipher'] = NULL;
+$CONF['database_ssl_verify_server_cert'] = true;
 
 // If you need to specify a different port for a MYSQL database connection, use e.g.
 //   $CONF['database_host'] = '172.30.33.66:3308';
@@ -119,9 +119,10 @@ $CONF['database_ssl_cipher'] = NULL;
 //   uncomment and change the following
 // $CONF['database_port'] = '5432';
 //
-// If you wish to connect using a local socket file (e.g /var/run/mysql.sock) uncomment the below.
+// If you wish to connect using a local socket file (e.g /var/run/mysql.sock) set this to the socket path.
 // $CONF['database_socket'] = '/var/run/mysql/mysqld.sock';
-//
+$CONF['database_socket'] = '';
+
 // If sqlite is used, specify the database file path:
 //   $CONF['database_name'] = '/etc/postfix/sqlite/postfixadmin.db'
 
@@ -140,7 +141,7 @@ $CONF['database_tables'] = array (
     'vacation' => 'vacation',
     'vacation_notification' => 'vacation_notification',
     'quota' => 'quota',
-	'quota2' => 'quota2',
+        'quota2' => 'quota2',
 );
 
 // Site Admin
@@ -149,6 +150,12 @@ $CONF['database_tables'] = array (
 // from Send Email / Broadcast message pages.
 // Leave blank to send email from the logged-in Admin's Email address.
 $CONF['admin_email'] = '';
+
+// Define the smtp password for admin_email.
+// This will be used to send emails from to create mailboxes and
+// from Send Email / Broadcast message pages.
+// Leave blank to send emails without authentification
+$CONF['admin_smtp_password'] = '';
 
 // Site admin name
 // This will be used as signature in notification messages
@@ -165,6 +172,9 @@ $CONF['smtp_port'] = '25';
 // Used in the HELO when sending emails from Postfix Admin
 $CONF['smtp_client'] = '';
 
+// Set 'YES' to use TLS when sending emails.
+$CONF['smtp_sendmail_tls'] = 'NO';
+
 // Encrypt
 // In what way do you want the passwords to be crypted?
 // md5crypt = internal postfix admin md5
@@ -174,10 +184,18 @@ $CONF['smtp_client'] = '';
 // mysql_encrypt = useful for PAM integration
 // authlib = support for courier-authlib style passwords - also set $CONF['authlib_default_flavor']
 // dovecot:CRYPT-METHOD = use dovecotpw -s 'CRYPT-METHOD'. Example: dovecot:CRAM-MD5
+// php_crypt:CRYPT-METHOD:DIFFICULTY:PREFIX = use PHP built in crypt()-function. Example: php_crypt:SHA512:50000
+// - php_crypt CRYPT-METHOD: Supported values are DES, MD5, BLOWFISH, SHA256, SHA512
+// - php_crypt DIFFICULTY: Larger value is more secure, but uses more CPU and time for each login.
+// - php_crypt DIFFICULTY: Set this according to your CPU processing power.
+// - php_crypt DIFFICULTY: Supported values are BLOWFISH:4-31, SHA256:1000-999999999, SHA512:1000-999999999
+// - php_crypt DIFFICULTY: leave empty to use default values (BLOWFISH:10, SHA256:5000, SHA512:5000). Example: php_crypt:SHA512
 //     IMPORTANT:
 //     - don't use dovecot:* methods that include the username in the hash - you won't be able to login to PostfixAdmin in this case
 //     - you'll need at least dovecot 2.1 for salted passwords ('doveadm pw' 2.0.x doesn't support the '-t' option)
 //     - dovecot 2.0.0 - 2.0.7 is not supported
+// - php_crypt PREFIX: hash has specified prefix - example: php_crypt:SHA512::{SHA256-CRYPT}
+// sha512.b64 - {SHA512-CRYPT.B64} (base64 encoded sha512) (no dovecot dependency; should support migration from md5crypt)
 $CONF['encrypt'] = 'md5crypt';
 
 // In what flavor should courier-authlib style passwords be encrypted?
@@ -200,7 +218,7 @@ if(@file_exists('/usr/bin/doveadm')) { // @ to silence openbase_dir stuff; see h
 // Password validation
 // New/changed passwords will be validated using all regular expressions in the array.
 // If a password doesn't match one of the regular expressions, the corresponding
-// error message from $PALANG (see languages/*) will be displayed.
+// error message from $PALANG (see languages/*.lang) will be displayed.
 // See http://de3.php.net/manual/en/reference.pcre.pattern.syntax.php for details
 // about the regular expression syntax.
 // If you need custom error messages, you can add them using $CONF['language_hook'].
@@ -208,9 +226,12 @@ if(@file_exists('/usr/bin/doveadm')) { // @ to silence openbase_dir stuff; see h
 // (separated with a space).
 $CONF['password_validation'] = array(
 #    '/regular expression/' => '$PALANG key (optional: + parameter)',
-#    '/.{5}/'                => 'password_too_short 5',      # minimum length 5 characters
-#    '/([a-zA-Z].*){3}/'     => 'password_no_characters 3',  # must contain at least 3 characters
-#    '/([0-9].*){2}/'        => 'password_no_digits 2',      # must contain at least 2 digits
+    '/.{5}/'                => 'password_too_short 5',      # minimum length 5 characters
+    '/([a-zA-Z].*){3}/'     => 'password_no_characters 3',  # must contain at least 3 characters
+    '/([0-9].*){2}/'        => 'password_no_digits 2',      # must contain at least 2 digits
+
+    /*  support a 'callable' value which if it returns a non-empty string will be assumed to have failed, non-empty string should be a PALANG key */
+    // 'length_check'          => function($password) { if (strlen(trim($password)) < 3) { return 'password_too_short'; } },
 );
 
 // Generate Password
@@ -247,13 +268,13 @@ $CONF['default_aliases'] = array (
 //   NO:  /usr/local/virtual/username@domain.tld
 $CONF['domain_path'] = 'YES';
 // If you don't want to have the domain in your mailbox set this to 'NO'.
-// Examples: 
+// Examples:
 //   YES: /usr/local/virtual/domain.tld/username@domain.tld
 //   NO:  /usr/local/virtual/domain.tld/username
 // Note: If $CONF['domain_path'] is set to NO, this setting will be forced to YES.
 $CONF['domain_in_mailbox'] = 'NO';
 // If you want to define your own function to generate a maildir path set this to the name of the function.
-// Notes: 
+// Notes:
 //   - this configuration directive will override both domain_path and domain_in_mailbox
 //   - the maildir_name_hook() function example is present below, commented out
 //   - if the function does not exist the program will default to the above domain_path and domain_in_mailbox settings
@@ -261,7 +282,7 @@ $CONF['maildir_name_hook'] = 'NO';
 
 /*
     maildir_name_hook example function
- 
+
     Called when creating a mailbox if $CONF['maildir_name_hook'] == '<name_of_the_function>'
     - allows for customized maildir paths determined by a custom function
     - the example below will prepend a single-character directory to the
@@ -282,11 +303,11 @@ function maildir_name_hook($domain, $user) {
 }
 */
 
-/*  
+/*
     *_struct_hook - change, add or remove fields
 
     If you need additional fields or want to change or remove existing fields,
-    you can write a hook function to modify $struct in the *Handler classes. 
+    you can write a hook function to modify $struct in the *Handler classes.
 
     The edit form will automatically be updated according to the modified
     $struct. The list page is not yet updated automatically.
@@ -294,18 +315,18 @@ function maildir_name_hook($domain, $user) {
     You can define one hook function per class, named like the primary database
     table of that class.
     The hook function is called with $struct as parameter and must return the
-    modified $struct. 
+    modified $struct.
 
     Note: Adding a field to $struct adds the handling of this field in
     PostfixAdmin, but it does not create it in the database. You have to do
-    that yourself. 
+    that yourself.
     Please follow the naming policy for custom database fields and tables on
     https://sourceforge.net/p/postfixadmin/wiki/Custom_fields/
     to avoid clashes with future versions of PostfixAdmin.
 
     See initStruct() in the *Handler class for the default $struct.
     See pacol() in functions.inc.php for the available flags on each column.
-    
+
     Example:
 
     function x_struct_admin_modify($struct) {
@@ -338,6 +359,10 @@ $CONF['quota'] = 'NO';
 $CONF['domain_quota'] = 'YES';
 // You can either use '1024000' or '1048576'
 $CONF['quota_multiplier'] = '1024000';
+// fill state threshold (in per cent) for medium level (displayed as orange)
+$CONF['quota_level_med_pct'] = 55;
+// fill state threshold (in per cent) for high level (displayed as red)
+$CONF['quota_level_high_pct'] = 90;
 
 // Transport
 // If you want to define additional transport options for a domain set this to 'YES'.
@@ -382,8 +407,8 @@ $CONF['vacation_control_admin'] = 'YES';
 // ReplyType options
 // If you want to define additional reply options put them in array below.
 // The array has the format   seconds between replies => $PALANG text
-// Special values for seconds are: 
-// 0 => only reply to the first mail while on vacation 
+// Special values for seconds are:
+// 0 => only reply to the first mail while on vacation
 // 1 => reply on every mail
 $CONF['vacation_choice_of_reply'] = array (
    0 => 'reply_once',        // Sends only Once the message during Out of Office
@@ -423,7 +448,7 @@ $CONF['special_alias_control'] = 'NO';
 $CONF['alias_goto_limit'] = '0';
 
 // Alias Domains
-// Alias domains allow to "mirror" aliases and mailboxes to another domain. This makes 
+// Alias domains allow to "mirror" aliases and mailboxes to another domain. This makes
 // configuration easier if you need the same set of aliases on multiple domains, but
 // also requires postfix to do more database queries.
 // Note: If you update from 2.2.x or earlier, you will have to update your postfix configuration.
@@ -483,7 +508,7 @@ EOM;
 
 // When creating mailboxes or aliases, check that the domain-part of the
 // address is legal by performing a name server look-up.
-$CONF['emailcheck_resolve_domain']='NO';
+$CONF['emailcheck_resolve_domain']='YES';
 
 
 // Optional:
@@ -510,6 +535,16 @@ $CONF['show_undeliverable']='YES';
 $CONF['show_undeliverable_color']='tomato';
 // mails to these domains will never be flagged as undeliverable
 $CONF['show_undeliverable_exceptions']=array("unixmail.domain.ext","exchangeserver.domain.ext");
+// show mailboxes with expired password; requires password_expiration to be enabled
+$CONF['show_expired']='YES';
+$CONF['show_expired_color']='orange';
+// show vacation enabled mailboxes
+$CONF['show_vacation']='YES';
+$CONF['show_vacation_color']='turquoise';
+// show disabled accounts
+$CONF['show_disabled']='YES';
+$CONF['show_disabled_color']='grey';
+// show POP/IMAP mailboxes
 $CONF['show_popimap']='YES';
 $CONF['show_popimap_color']='darkgrey';
 // you can assign special colors to some domains. To do this,
@@ -574,7 +609,7 @@ $CONF['domain_postdeletion_script'] = '';
 // Will not work with POP3.
 // If you define create_mailbox_subdirs, then the
 // create_mailbox_subdirs_host must also be defined.
-//
+// Note: requires imap extension within PHP
 // $CONF['create_mailbox_subdirs']=array('Spam');
 $CONF['create_mailbox_subdirs'] = array();
 $CONF['create_mailbox_subdirs_host']='localhost';
@@ -641,9 +676,11 @@ function x_send_sms_clickatell($to, $message) {
 */
 
 // Theme Config
-// Specify your own logo and CSS file
+$CONF['theme'] = 'default';
+// Specify your own favicon, logo and CSS file
+$CONF['theme_favicon'] = 'images/favicon.ico';
 $CONF['theme_logo'] = 'images/logo-default.png';
-$CONF['theme_css'] = 'css/default.css';
+$CONF['theme_css'] = 'css/bootstrap.css';
 // If you want to customize some styles without editing the $CONF['theme_css'] file,
 // you can add a custom CSS file. It will be included after $CONF['theme_css'].
 $CONF['theme_custom_css'] = '';
@@ -654,8 +691,15 @@ $CONF['theme_custom_css'] = '';
 //  change to boolean true to enable xmlrpc
 $CONF['xmlrpc_enabled'] = false;
 
-// If you want to keep most settings at default values and/or want to ensure 
-// that future updates work without problems, you can use a separate config 
+//Account expiration info
+//If enabled, mailbox passwords have a password_expiry field set, which is updated each time the password is changed, based on the parent domain's password_expiry (days) value.
+//More details in README.password_expiration
+$CONF['password_expiration'] = 'NO';
+
+$CONF['version'] = '3.3.10';
+
+// If you want to keep most settings at default values and/or want to ensure
+// that future updates work without problems, you can use a separate config
 // file (config.local.php) instead of editing this file and override some
 // settings there.
 if (file_exists(dirname(__FILE__) . '/config.local.php')) {

@@ -3,19 +3,18 @@ postfixadmin（プレビュー）
 
 ## これは何？
 
-postfixadminを使用したメールサーバを構築するplaybookです。
+PostfixAdmin メールサーバ
 
-- 自己証明書を作成
-- postfixの設定調整
-- dovecotの導入/設定調整
-- postfixadminの導入/設定調整
-- vmailユーザの作成
-- postfixadmin用のツールをデプロイ
+- 自己証明書作成
+- Postfix 設定調整
+- Dovecot 導入/設定調整
+- PostfixAdmin 導入/設定調整
+- vmail ユーザ作成
 
 ## 変数
 
-mail_domainに設定するpostfixadmin用のドメインを指定して下さい。  
-postfix_passwordにpostfixadminのmysql接続用となるパスワードを定義して下さい。  
+mail_domain ← PostfixAdmin ドメイン  
+postfix_password ← PostfixAdmin ユーザ DB Password ( 適当な文字列 )  
 
 
 ```
@@ -28,10 +27,15 @@ postfix_passwordにpostfixadminのmysql接続用となるパスワードを定�
 Dependencies
 -------
 
-- httpd
-- php
-- mysql-server
+- 02_web/httpd
+- 03_app/php-fpm
+- 04_database/mysql-server80
 
+Other
+-------
+プロビジョニング後に下記に接続し設定を行う。  
+
+http://[server ip]/postfixadmin/setup.php
 
 License
 -------

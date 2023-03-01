@@ -60,3 +60,7 @@
   args:
     chdir: /usr/share/postfixadmin/
 
+- name: install postfix-mysql
+  yum:
+    name:
+      - postfix-mysql
