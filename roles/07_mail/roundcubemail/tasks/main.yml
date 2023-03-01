@@ -1,0 +1,69 @@
+---
+- name: confirm postfixadmin exist
+  stat: 
+    path: /var/www/roundcubemail
+  register: roundcubemail_dir
+
+- name: download roundcubemail source
+  unarchive:
+    src: "{{ roundcubemail_download_url | default('https://github.com/roundcube/roundcubemail/releases/download/1.6.1/roundcubemail-1.6.1.tar.gz', true) }}"
+    dest: /var/www/
+    remote_src: yes
+    owner: apache
+    group: apache
+  when: not roundcubemail_dir.stat.exists
+
+- name: rename roundcubemail source to roundcubemail
+  shell: mv roundcubemail-* roundcubemail
+    chdir=/var/www/
+  when: not roundcubemail_dir.stat.exists
+
+- name: create db for roundcubemail
+  mysql_db:
+    name: roundcubemail
+    state: present
+    login_user: root
+    login_password: "{{ db_passwd }}"
+
+- name: create roundcubemail user
+  mysql_user:
+    name: roundcube
+    host: localhost
+    password: "{{ roundcubemail_password }}"
+    priv: roundcubemail.*:all
+    state: present
+    login_user: root
+    login_password: "{{ db_passwd }}"
+
+- name: rename roundcubemail source to roundcubemail
+  shell: echo Alias /roundcubemail /var/www/roundcubemail > /etc/httpd/conf.d/roundcubemail.conf
+
+- name: install php-pear composer
+  yum:
+    name:
+      - php-pear
+      - composer
+      - php-pecl-imagick
+      - php-ldap
+
+- name: composer require guzzlehttp/guzzle
+  shell: composer require --no-interaction guzzlehttp/guzzle 
+    chdir=/var/www/roundcubemail
+
+- name: Install pear package
+  community.general.pear:
+    name: Auth_SASL
+    state: present
+
+- name: Install pecl package
+  community.general.pear:
+    name: Net_SMTP
+    state: present
+
+- name: Install pecl package
+  community.general.pear:
+    name: Mail_mime
+    state: present
+
+- name: run install-jsdeps.sh
+  shell: /var/www/roundcubemail/bin/install-jsdeps.sh
