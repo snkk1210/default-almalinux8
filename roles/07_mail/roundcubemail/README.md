@@ -22,7 +22,7 @@ Dependencies
 - 02_web/httpd
 - 03_app/php-fpm
 - 04_database/mysql-server80
-- 07_mail/roundcubemail
+- 07_mail/postfixadmin
 
 Other
 -------
