@@ -16,6 +16,11 @@
       - expect
     state: present
 
+- name: pip install pexpect
+  pip:
+    name:
+      - pexpect
+
 - name: install mysql
   shell: "dnf install --disablerepo=appstream mysql-community-server -y"
 
@@ -95,3 +100,9 @@
     state: restarted
     daemon_reload: yes
     enabled: yes
+
+- name: mysql_config_editor set -G lroot -h localhost -u root -p
+  expect:
+    command: mysql_config_editor set -G lroot -h localhost -u root -p
+    responses:
+      "Enter password:": "{{ db_passwd }}"
