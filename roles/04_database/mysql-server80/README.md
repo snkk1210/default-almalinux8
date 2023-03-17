@@ -3,14 +3,14 @@ mysql-server80
 
 ## これは何？
 
-mysql8.0を導入し、初期設定まで行うplaybookです。
+MySQL8.0 を導入し、初期設定まで行う Playbook です。
 
-- レポジトリの追加
-- my.cnf設定
-- mysqlインストール
-- expectインストール
-- mysql再起動
-- mysql初期設定(mysql_secure_installation)
+- リポジトリ追加
+- my.cnf 設定
+- MySQL インストール
+- expect インストール
+- MySQL 初期設定 ( mysql_secure_installation )
+- mysql_config_editor 登録
 
 ## 変数定義
 
@@ -23,6 +23,8 @@ innodb_buffer_pool_size: 256M
 key_buffer_size: 128M
 db_passwd: OP:Ts7ajsu98J
 ```
+
+※ db_passwd に 「# (シャープ)」 の文字を含めないで下さい。  
 
 License
 -------
