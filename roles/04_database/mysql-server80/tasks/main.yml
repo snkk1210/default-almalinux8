@@ -101,8 +101,14 @@
     daemon_reload: yes
     enabled: yes
 
+- name: mysql_config_editor print --login-path=lroot
+  shell: mysql_config_editor print --login-path=lroot
+  register: lroot
+  changed_when: False
+
 - name: mysql_config_editor set -G lroot -h localhost -u root -p
   expect:
     command: mysql_config_editor set -G lroot -h localhost -u root -p
     responses:
       "Enter password:": "{{ db_passwd }}"
+  when: not 'lroot' in lroot.stdout

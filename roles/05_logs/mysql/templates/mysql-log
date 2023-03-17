@@ -10,9 +10,9 @@
     postrotate
        # just if mysqld is really running
        if test -x /usr/bin/mysqladmin && \
-          HOME=/var/log/mysql /usr/bin/mysqladmin ping &>/dev/null
+          /usr/bin/mysqladmin --login-path=llog ping &>/dev/null
        then
-          HOME=/var/log/mysql /usr/bin/mysqladmin flush-logs
+          /usr/bin/mysqladmin --login-path=llog flush-logs
        fi
     endscript
 }
