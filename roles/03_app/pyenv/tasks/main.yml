@@ -7,11 +7,15 @@
     disable_gpg_check: yes
 
 - name: check ~/.pyenv
+  become: yes
+  become_user: "{{ pyenv_user | default('root', true) }}"
   stat:
     path: ~/.pyenv
   register: pyenv
 
 - name: install pyenv
+  become: yes
+  become_user: "{{ pyenv_user | default('root', true) }}"
   shell: |
     git clone https://github.com/pyenv/pyenv.git ~/.pyenv
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
