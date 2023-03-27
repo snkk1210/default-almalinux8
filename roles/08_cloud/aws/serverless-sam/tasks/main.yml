@@ -87,3 +87,17 @@
     owner: root
     group: root
     mode: 0644
+
+- name: check /usr/local/src/awscliv2.zip
+  stat:
+    path: /usr/local/src/awscliv2.zip
+  register: awscliv2
+
+- name: install aws cli
+  shell: |
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+  args:
+    chdir: /usr/local/src/
+  when: not awscliv2.stat.exists
