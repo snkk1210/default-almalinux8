@@ -30,4 +30,4 @@ BSD
 Author Information
 ------------------
 
-- keisuke sanuki 
+- snkk1210
